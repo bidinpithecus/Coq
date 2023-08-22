@@ -39,27 +39,34 @@ Qed.
 Theorem mul_0_r : forall n:nat,
 	n * 0 = 0.
 Proof.
-	(* FILL IN HERE *) Admitted.
+	induction n.
+	- simpl. reflexivity.
+	- simpl. rewrite IHn. reflexivity.
+Qed.
 
 Theorem plus_n_Sm : forall n m : nat,
 	S (n + m) = n + (S m).
 Proof.
-	(* FILL IN HERE *) Admitted.
+	induction n.
+	- simpl. reflexivity.
+	- intros m. simpl. rewrite IHn. reflexivity.
+Qed.
 
 Theorem add_comm : forall n m : nat,
 	n + m = m + n.
 Proof.
-	(* FILL IN HERE *) Admitted.
+	induction n.
+	- intros m. simpl. rewrite add_0_r. reflexivity.
+	- intros m. simpl. rewrite <- plus_n_Sm. rewrite IHn. reflexivity.
+Qed.
 
 Theorem add_assoc : forall n m p : nat,
 	n + (m + p) = (n + m) + p.
 Proof.
-	(* FILL IN HERE *) Admitted.
-(** [] *)
-
-(** **** Exercise: 2 stars, standard (double_plus)
-
-		Consider the following function, which doubles its argument: *)
+	induction n.
+	- intros m p. simpl. reflexivity.
+	- intros m p. simpl. rewrite IHn. reflexivity.
+Qed.
 
 Fixpoint double (n:nat) :=
 	match n with
@@ -67,37 +74,28 @@ Fixpoint double (n:nat) :=
 	| S n' => S (S (double n'))
 	end.
 
-(** Use induction to prove this simple fact about [double]: *)
-
 Lemma double_plus : forall n, double n = n + n .
 Proof.
-	(* FILL IN HERE *) Admitted.
-(** [] *)
+	induction n.
+	- simpl. reflexivity.
+	- simpl. rewrite IHn. rewrite plus_n_Sm. reflexivity.
+Qed.
 
-(** **** Exercise: 2 stars, standard (eqb_refl)
-
-		The following theorem relates the computational equality [=?] on
-		[nat] with the definitional equality [=] on [bool]. *)
 Theorem eqb_refl : forall n : nat,
 	(n =? n) = true.
 Proof.
-	(* FILL IN HERE *) Admitted.
-(** [] *)
-
-(** **** Exercise: 2 stars, standard, optional (even_S)
-
-		One inconvenient aspect of our definition of [even n] is the
-		recursive call on [n - 2]. This makes proofs about [even n]
-		harder when done by induction on [n], since we may need an
-		induction hypothesis about [n - 2]. The following lemma gives an
-		alternative characterization of [even (S n)] that works better
-		with induction: *)
+	induction n.
+	- simpl. reflexivity.
+	- simpl. rewrite IHn. reflexivity.
+Qed.
 
 Theorem even_S : forall n : nat,
 	even (S n) = negb (even n).
 Proof.
-	(* FILL IN HERE *) Admitted.
-(** [] *)
+	induction n.
+	- simpl. reflexivity.
+	- rewrite IHn. simpl. rewrite negb_involutive. reflexivity.
+Qed.
 
 (* ################################################################# *)
 (** * Proofs Within Proofs *)
