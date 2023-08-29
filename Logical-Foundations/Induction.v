@@ -267,169 +267,124 @@ Proof.
 	- rewrite add_comm. reflexivity.
 Qed.
 
-Inductive bin : Type :=
+(* Binary Section *)
+
+Inductive bin: Type :=
 	| Z
 	| B0 (n : bin)
 	| B1 (n : bin)
 .
 
-Fixpoint incr (m:bin) : bin
-	(* REPLACE THIS LINE WITH ":= _your_definition_ ." *). Admitted.
+Fixpoint incr (m: bin): bin :=
+	match m with
+	| Z => B1 Z
+	| B0 b => B1 b
+	| B1 b => B0 (incr b)
+	end
+.
 
-Fixpoint bin_to_nat (m:bin) : nat
-	(* REPLACE THIS LINE WITH ":= _your_definition_ ." *). Admitted.
+Fixpoint bin_to_nat (m: bin): nat :=
+	match m with
+	| Z => O
+	| B0 b => 2 * (bin_to_nat b)
+	| B1 b => S (2 * (bin_to_nat b))
+	end
+.
 
-(** In [Basics], we did some unit testing of [bin_to_nat], but we
-		didn't prove its correctness. Now we'll do so. *)
-
-(** **** Exercise: 3 stars, standard, especially useful (binary_commute)
-
-		Prove that the following diagram commutes:
-
-														incr
-							bin ----------------------> bin
-							 |                           |
-		bin_to_nat |                           |  bin_to_nat
-							 |                           |
-							 v                           v
-							nat ----------------------> nat
-														 S
-
-		That is, incrementing a binary number and then converting it to
-		a (unary) natural number yields the same result as first converting
-		it to a natural number and then incrementing.
-
-		If you want to change your previous definitions of [incr] or [bin_to_nat]
-		to make the property easier to prove, feel free to do so! *)
-
-Theorem bin_to_nat_pres_incr : forall b : bin,
+Theorem bin_to_nat_pres_incr: forall b: bin,
 	bin_to_nat (incr b) = 1 + bin_to_nat b.
 Proof.
-	(* FILL IN HERE *) Admitted.
+	intros. induction b.
+	- simpl. reflexivity.
+	- simpl. reflexivity.
+	- simpl. rewrite add_0_r.
+		rewrite add_0_r. rewrite IHb.
+		simpl. rewrite add_comm.
+		assert (S (bin_to_nat b) + bin_to_nat b = S (bin_to_nat b + bin_to_nat b)).
+			{
+				simpl. reflexivity.
+			}
+		rewrite H. reflexivity.
+Qed.
 
-(** [] *)
-
-(** **** Exercise: 3 stars, standard (nat_bin_nat) *)
-
-(** Write a function to convert natural numbers to binary numbers. *)
-
-Fixpoint nat_to_bin (n:nat) : bin
-	(* REPLACE THIS LINE WITH ":= _your_definition_ ." *). Admitted.
-
-(** Prove that, if we start with any [nat], convert it to [bin], and
-		convert it back, we get the same [nat] which we started with.
-
-		Hint: This proof should go through smoothly using the previous
-		exercise about [incr] as a lemma. If not, revisit your definitions
-		of the functions involved and consider whether they are more
-		complicated than necessary: the shape of a proof by induction will
-		match the recursive structure of the program being verified, so
-		make the recursions as simple as possible. *)
+Fixpoint nat_to_bin (n: nat): bin :=
+	match n with
+	| O => Z
+	| S n' => incr (nat_to_bin n')
+	end
+.
 
 Theorem nat_bin_nat : forall n, bin_to_nat (nat_to_bin n) = n.
 Proof.
-	(* FILL IN HERE *) Admitted.
-
-(** [] *)
-
-(* ################################################################# *)
-(** * Bin to Nat and Back to Bin (Advanced) *)
-
-(** The opposite direction -- starting with a [bin], converting to [nat],
-		then converting back to [bin] -- turns out to be problematic. That
-		is, the following theorem does not hold. *)
-
-Theorem bin_nat_bin_fails : forall b, nat_to_bin (bin_to_nat b) = b.
-Abort.
-
-(** Let's explore why that theorem fails, and how to prove a modified
-		version of it. We'll start with some lemmas that might seem
-		unrelated, but will turn out to be relevant. *)
-
-(** **** Exercise: 2 stars, advanced (double_bin) *)
-
-(** Prove this lemma about [double], which we defined earlier in the
-		chapter. *)
+	intros. induction n.
+	- simpl. reflexivity.
+	- simpl. rewrite bin_to_nat_pres_incr. simpl. rewrite IHn. reflexivity.
+Qed.
 
 Lemma double_incr : forall n : nat, double (S n) = S (S (double n)).
 Proof.
-	(* FILL IN HERE *) Admitted.
+	intros. induction n.
+	- simpl. reflexivity.
+	- rewrite IHn. simpl. reflexivity.
+Qed.
 
-(** Now define a similar doubling function for [bin]. *)
-
-Definition double_bin (b:bin) : bin
-	(* REPLACE THIS LINE WITH ":= _your_definition_ ." *). Admitted.
-
-(** Check that your function correctly doubles zero. *)
+Definition double_bin (b: bin): bin :=
+	match b with
+	| Z => Z
+	| b' => B0 b'
+	end
+.
 
 Example double_bin_zero : double_bin Z = Z.
-(* FILL IN HERE *) Admitted.
-
-(** Prove this lemma, which corresponds to [double_incr]. *)
+Proof.
+	intros. simpl. reflexivity.
+Qed.
 
 Lemma double_incr_bin : forall b,
 		double_bin (incr b) = incr (incr (double_bin b)).
 Proof.
-	(* FILL IN HERE *) Admitted.
+	intros. destruct b.
+	- simpl. reflexivity.
+	- simpl. reflexivity.
+	- simpl. reflexivity.
+Qed.
 
-(** [] *)
+Fixpoint normalize (b: bin) : bin :=
+	match b with
+	| Z => Z
+	| B0 b' => double_bin (normalize (b'))
+	| B1 b' => B1 (normalize (b'))
+	end
+.
 
-(** Let's return to our desired theorem: *)
+Lemma equivalent_doubles: forall n,
+	nat_to_bin (double n) = double_bin (nat_to_bin n).
+Proof.
+	intros. induction n.
+	- simpl. reflexivity.
+	- simpl. rewrite IHn.
+		rewrite double_incr_bin.
+		reflexivity.
+Qed.
 
-Theorem bin_nat_bin_fails : forall b, nat_to_bin (bin_to_nat b) = b.
-Abort.
-
-(** The theorem fails because there are some [bin] such that we won't
-		necessarily get back to the _original_ [bin], but instead to an
-		"equivalent" [bin].  (We deliberately leave that notion undefined
-		here for you to think about.)
-
-		Explain in a comment, below, why this failure occurs. Your
-		explanation will not be graded, but it's important that you get it
-		clear in your mind before going on to the next part. If you're
-		stuck on this, think about alternative implementations of
-		[double_bin] that might have failed to satisfy [double_bin_zero]
-		yet otherwise seem correct. *)
-
-(* FILL IN HERE *)
-
-(** To solve that problem, we can introduce a _normalization_ function
-		that selects the simplest [bin] out of all the equivalent
-		[bin]. Then we can prove that the conversion from [bin] to [nat] and
-		back again produces that normalized, simplest [bin]. *)
-
-(** **** Exercise: 4 stars, advanced (bin_nat_bin) *)
-
-(** Define [normalize]. You will need to keep its definition as simple
-		as possible for later proofs to go smoothly. Do not use
-		[bin_to_nat] or [nat_to_bin], but do use [double_bin].
-
-		Hint: Structure the recursion such that it _always_ reaches the
-		end of the [bin] and process each bit only once. Do not try to
-		"look ahead" at future bits. *)
-
-Fixpoint normalize (b:bin) : bin
-	(* REPLACE THIS LINE WITH ":= _your_definition_ ." *). Admitted.
-
-(** It would be wise to do some [Example] proofs to check that your definition of
-		[normalize] works the way you intend before you proceed. They won't be graded,
-		but fill them in below. *)
-
-(* FILL IN HERE *)
-
-(** Finally, prove the main theorem. The inductive cases could be a
-		bit tricky.
-
-		Hint: Start by trying to prove the main statement, see where you
-		get stuck, and see if you can find a lemma -- perhaps requiring
-		its own inductive proof -- that will allow the main proof to make
-		progress. We have one lemma for the [B0] case (which also makes
-		use of [double_incr_bin]) and another for the [B1] case. *)
+Lemma incr_of_double_bin: forall b,
+	incr (double_bin b) = B1 b.
+Proof.
+	destruct b.
+	- simpl. reflexivity.
+	- simpl. reflexivity.
+	- simpl. reflexivity.
+Qed.
 
 Theorem bin_nat_bin : forall b, nat_to_bin (bin_to_nat b) = normalize b.
 Proof.
-	(* FILL IN HERE *) Admitted.
-
-(** [] *)
-
-(* 2023-03-25 11:11 *)
+	intros. induction b.
+	- simpl. reflexivity.
+	- simpl. rewrite add_0_r.
+		rewrite <- double_plus. rewrite equivalent_doubles.
+		rewrite IHb. reflexivity.
+	- simpl. rewrite add_0_r.
+		rewrite <- double_plus. rewrite equivalent_doubles.
+		rewrite incr_of_double_bin. rewrite IHb.
+		reflexivity.
+Qed.
