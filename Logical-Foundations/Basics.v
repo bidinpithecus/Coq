@@ -21,10 +21,8 @@ Definition next_weekday (d:day) : day :=
 	end.
 
 Compute (next_weekday friday).
-(* ==> monday : day *)
 
 Compute (next_weekday (next_weekday saturday)).
-(* ==> tuesday : day *)
 
 Example test_next_weekday:
 	(next_weekday (next_weekday saturday)) = tuesday.
@@ -96,7 +94,6 @@ Example test_nandb3:               (nandb false true) = true.
 Proof. simpl. reflexivity. Qed.
 Example test_nandb4:               (nandb true true) = false.
 Proof. simpl. reflexivity. Qed.
-(** [] *)
 
 Definition andb3 (b1:bool) (b2:bool) (b3:bool) : bool :=
 	match b1, b2, b3 with
@@ -112,10 +109,8 @@ Example test_andb33:                 (andb3 true false true) = false.
 Proof. simpl. reflexivity. Qed.
 Example test_andb34:                 (andb3 true true false) = false.
 Proof. simpl. reflexivity. Qed.
-(** [] *)
 
 Check true.
-(* ===> true : bool *)
 
 Check true
 	: bool.
@@ -178,9 +173,8 @@ Definition all_zero (nb : nybble) : bool :=
 	end.
 
 Compute (all_zero (bits B1 B0 B1 B0)).
-(* ===> false : bool *)
+
 Compute (all_zero (bits B0 B0 B0 B0)).
-(* ===> true : bool *)
 
 End TuplePlayground.
 
@@ -203,7 +197,6 @@ Definition pred (n : nat) : nat :=
 End NatPlayground.
 
 Check (S (S (S (S O)))).
-(* ===> 4 : nat *)
 
 Definition minustwo (n : nat) : nat :=
 	match n with
@@ -213,7 +206,6 @@ Definition minustwo (n : nat) : nat :=
 	end.
 
 Compute (minustwo 4).
-(* ===> 2 : nat *)
 
 Check S        : nat -> nat.
 Check pred     : nat -> nat.
@@ -243,7 +235,6 @@ Fixpoint plus (n : nat) (m : nat) : nat :=
 	end.
 
 Compute (plus 3 2).
-(* ===> 5 : nat *)
 
 Fixpoint mult (n m : nat) : nat :=
 	match n with
@@ -279,7 +270,6 @@ Example test_factorial1:          (factorial 3) = 6.
 Proof. simpl. reflexivity. Qed.
 Example test_factorial2:          (factorial 5) = (mult 10 12).
 Proof. simpl. reflexivity. Qed.
-(** [] *)
 
 Notation "x + y" := (plus x y)
 											 (at level 50, left associativity)
@@ -339,7 +329,6 @@ Example test_ltb2:             (ltb 2 4) = true.
 Proof. simpl. reflexivity. Qed.
 Example test_ltb3:             (ltb 4 2) = false.
 Proof. simpl. reflexivity. Qed.
-(** [] *)
 
 Theorem plus_O_n : forall n : nat, 0 + n = n.
 Proof.
@@ -366,11 +355,8 @@ Theorem plus_id_example : forall n m:nat,
 	n + n = m + m.
 
 Proof.
-	(* move both quantifiers into the context: *)
 	intros n m.
-	(* move the hypothesis into the context: *)
 	intros H.
-	(* rewrite the goal using the hypothesis: *)
 	rewrite -> H.
 	reflexivity.  Qed.
 
@@ -382,13 +368,10 @@ Proof.
 	rewrite -> H0.
 	reflexivity.
 Qed.
-(** [] *)
 
 Check mult_n_O.
-(* ===> forall n : nat, 0 = n * 0 *)
 
 Check mult_n_Sm.
-(* ===> forall n m : nat, n * m + n = n * S m *)
 
 Theorem mult_n_0_m_0 : forall p q : nat,
 	(p * 0) + (q * 0) = 0.
@@ -406,8 +389,6 @@ Proof.
 	rewrite <- mult_n_O.
 	reflexivity.
 Qed.
-
-(** [] *)
 
 Theorem plus_1_neq_0_firsttry : forall n : nat,
 	(n + 1) =? 0 = false.
@@ -486,7 +467,6 @@ Proof.
 		+ reflexivity.
 		+ rewrite <- H. reflexivity.
 Qed.
-(** [] *)
 
 Theorem plus_1_neq_0' : forall n : nat,
 	(n + 1) =? 0 = false.
@@ -512,7 +492,6 @@ Proof.
 	- reflexivity.
 	- reflexivity.
 Qed.
-	(** [] *)
 
 Notation "x + y" := (plus x y)
 											 (at level 50, left associativity)

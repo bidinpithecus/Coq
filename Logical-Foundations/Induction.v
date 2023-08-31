@@ -1,5 +1,3 @@
-(** * Induction: Proof by Induction *)
-
 From MYCOQ Require Export Basics.
 
 Theorem add_0_r_firsttry : forall n:nat,
@@ -111,10 +109,7 @@ Theorem plus_rearrange_firsttry : forall n m p q : nat,
 	(n + m) + (p + q) = (m + n) + (p + q).
 Proof.
 	intros n m p q.
-	(* We just need to swap (n + m) for (m + n)... seems
-		 like add_comm should do the trick! *)
 	rewrite add_comm.
-	(* Doesn't work... Coq rewrites the wrong plus! :-( *)
 Abort.
 
 Theorem plus_rearrange : forall n m p q : nat,
