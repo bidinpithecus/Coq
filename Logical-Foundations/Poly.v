@@ -528,12 +528,6 @@ Proof. reflexivity. Qed.
 Example two_church_peano : two nat S O = 2.
 Proof. reflexivity. Qed.
 
-(** Define a function that computes the successor of a Church numeral.
-		Given a Church numeral [n], its successor [scc n] should iterate
-		its function argument once more than [n]. That is, given [fun X f x
-		=> f^n x] as input, [scc] should produce [fun X f x => f^(n+1) x] as
-		output. In other words, do it [n] times, then do it once more. *)
-
 Definition scc (n : cnat) : cnat :=
 	fun X f x => f (n X f x).
 
