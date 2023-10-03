@@ -1,5 +1,7 @@
 (** * Métodos Formais - Lista de Exercícios 2
- Não importar nenhum outro módulo.*)
+ Não importar nenhum outro módulo.
+ Nome: Vinícios Bidin Santos
+ *)
 
 Require Import Coq.Lists.List.
 Import ListNotations.
